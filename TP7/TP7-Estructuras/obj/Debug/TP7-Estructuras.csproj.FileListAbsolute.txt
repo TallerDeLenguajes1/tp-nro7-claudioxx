@@ -1,1 +1,8 @@
 H:\repositorio\tp-nro7-claudioxx\TP7\TP7-Estructuras\bin\Debug\TP7-Estructuras.exe.config
+D:\repositorio\tp-nro7-claudioxx\TP7\TP7-Estructuras\bin\Debug\TP7-Estructuras.exe.config
+D:\repositorio\tp-nro7-claudioxx\TP7\TP7-Estructuras\bin\Debug\TP7-Estructuras.exe
+D:\repositorio\tp-nro7-claudioxx\TP7\TP7-Estructuras\bin\Debug\TP7-Estructuras.pdb
+D:\repositorio\tp-nro7-claudioxx\TP7\TP7-Estructuras\obj\Debug\TP7-Estructuras.csprojAssemblyReference.cache
+D:\repositorio\tp-nro7-claudioxx\TP7\TP7-Estructuras\obj\Debug\TP7-Estructuras.csproj.CoreCompileInputs.cache
+D:\repositorio\tp-nro7-claudioxx\TP7\TP7-Estructuras\obj\Debug\TP7-Estructuras.exe
+D:\repositorio\tp-nro7-claudioxx\TP7\TP7-Estructuras\obj\Debug\TP7-Estructuras.pdb
