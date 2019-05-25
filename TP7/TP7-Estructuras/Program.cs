@@ -10,25 +10,24 @@ namespace TP7_Estructuras
     {
 
         public enum Cargos { Auxiliar, Administrativo, Ingeniero, Especialista, Investigador };
-        public enum Nombres { Claudio, Pedro, Maria };
-        public enum Apellidos { Armando, Aleman, Fernandez };
-        //public string[] estadocivil = {"asd","asd","asd","asd"};
-        public enum EstadoCivil { Soltero,Casado,Divorciado,Viudo };
-        public enum Genero { Hombre,Mujer,Indistinto};
+        public enum EstadoCivil { Soltero, Casado, Divorciado, Viudo };
+        public enum Genero { Hombre, Mujer, Indistinto };
 
         public struct Personal
         {
-            public string Nombre, Apellido, EstadoCivil, Genero;
+            public string Nombre, Apellido;
             public double Sueldo;
             public Cargos Cargo;
+            public EstadoCivil estadoCivil;
+            public Genero genero;
             public DateTime FechaNacimiento, FechaIngreso;
 
-            public Personal (string _Nombre, string _Apellido, string _EstadoCivil, string _Genero,double _Sueldo,Cargos _Cargo,DateTime _FechaNacimiento, DateTime _FechaIngreso)
+            public Personal(string _Nombre, string _Apellido, EstadoCivil _EstadoCivil, Genero _Genero, double _Sueldo, Cargos _Cargo, DateTime _FechaNacimiento, DateTime _FechaIngreso)
             {
                 Nombre = _Nombre;
                 Apellido = _Apellido;
-                EstadoCivil = _EstadoCivil;
-                Genero = _Genero;
+                estadoCivil = _EstadoCivil;
+                genero = _Genero;
                 Sueldo = _Sueldo;
                 Cargo = _Cargo;
                 FechaNacimiento = _FechaNacimiento;
@@ -37,9 +36,9 @@ namespace TP7_Estructuras
 
             public void mostrarDatos()
             {
-                Console.Write(" Nombre: "+Nombre+"\n Apellido: "+Apellido+"\n Edad: "+edad()+"\n Estado civil: "+EstadoCivil+"\n Genero: "+Genero+"\n Sueldo: "+Sueldo+"\n Cargo: "+Cargo+
-                    "\n Fecha de nacimiento: "+ FechaNacimiento.ToString("dd/MM/yyyy")+"\n Fecha de Ingreso: "+FechaIngreso.ToString("dd/MM/yyyy") + "\n Antigüedad: "+antiguedad()+
-                    "\n Años para jubilarse: "+jubilacion()+"\n\n");
+                Console.Write(" Nombre: " + Nombre + "\n Apellido: " + Apellido + "\n Edad: " + edad() + "\n Estado civil: " + estadoCivil + "\n Genero: " + genero + "\n Sueldo: $" + Sueldo + "\n Cargo: " + Cargo +
+                    "\n Fecha de nacimiento: " + FechaNacimiento.ToString("dd/MM/yyyy") + "\n Fecha de Ingreso: " + FechaIngreso.ToString("dd/MM/yyyy") + "\n Antigüedad: " + antiguedad() +
+                    "\n Años para jubilarse: " + jubilacion() + "\n Salario: $" + salario() + "\n\n");
             }
 
             public double edad()
@@ -59,7 +58,7 @@ namespace TP7_Estructuras
             public double jubilacion()
             {
                 double jubilacion;
-                if (Genero == "Hombre")
+                if (genero == Genero.Hombre)
                     jubilacion = 65 - antiguedad();
                 else
                     jubilacion = 60 - antiguedad();
@@ -68,78 +67,168 @@ namespace TP7_Estructuras
 
             public double salario()
             {
-                double salario=0,adicional;
-                int hijos=rand.Next(1,6);
+                Random rand = new Random();
+                double salario = 0, adicional = 0;
+                int hijos = rand.Next(1, 6);
+
+                if (antiguedad() > 20)
+                    adicional = Sueldo * 0.40 + Sueldo * 0.25;
+                else
+                    adicional = Sueldo * ((antiguedad() * 2) / 100);
+
+                if (Cargo == Cargos.Ingeniero || Cargo == Cargos.Especialista)
+                    adicional = adicional * 1.50;
+
+                if (estadoCivil == EstadoCivil.Casado && hijos > 2)
+                    adicional = adicional + 5000;
+
+                salario = Sueldo + adicional;
                 return salario;
             }
         }
 
         //ESTA BIEN ESTA DECLARACION????????
         static public Random rand = new Random();
+        static List<Personal> Empresa = new List<Personal>();
+        static public string[] Nombres = { "Claudio", "Pedro", "Maria" };
+        static public string[] Apellidos = { "Armando", "Aleman", "Fernandez" };
 
         static void Main(string[] args)
         {
             MENU();
         }
-
         static public void MENU()
         {
-            int Opcion = 1,cont = 0;
-            List<Personal> Empresa = new List<Personal>();
-            while (Opcion>0)
+            int Opcion = 1;
+            //como hacer la lista global para todas las funciones???
+            Console.Clear();
+            Console.Write("1: SIMULAR CARGA DE 20 EMPLEADOS.\n2: EMPLEADOS.\n3: CANTIDAD DE EMPLEADOS.\n4: MONTO TOTAL DE LA EMPRESA (EN SALARIOS).\n0: SALIR.\nOPCION: ");
+            Opcion = int.Parse(Console.ReadLine());
+            switch (Opcion)
             {
-                Console.Clear();
-                Console.Write("1: INGRESAR EMPLEADO.\n2: ANTIGÜEDAD.\n3: EDAD.\n4: JUBILACION.\n5: SALARIO.\n6: CANTIDAD DE EMPLEADOS.\n7: MONTO TOTAL.\n8: MOTRAR DATOS.\n0: SALIR.\nOPCION: ");
-                Opcion = int.Parse(Console.ReadLine());
-                switch (Opcion)
-                {
-                    case 1:
-                        Console.Clear();
-                        while (cont < 20)
-                        {
-                            generarPersonal(Empresa);
-                            cont++;
-                        }
-                        cont = 0;
-                        foreach(Personal personal in Empresa)
-                        {
-                            Console.Write((cont+1) + "*****************************************\n\n");
-                            personal.mostrarDatos();
-                            cont++;
-                        }
-                        Console.ReadKey();
-                        break;
+                case 1:
+                    Console.Clear();
+                    simulador();
+                    Otra_Operacion();
+                    break;
+                case 2:
+                    Console.Clear();
+                    empleados();
+                    Otra_Operacion();
+                    break;
+                case 3:
+                    Console.Clear();
+                    cantidadEmpleados();
+                    Otra_Operacion();
+                    break;
+                case 4:
+                    Console.Clear();
+                    montoSalarios();
+                    Otra_Operacion();
+                    break;
+                case 0:
+                    break;
             }
         }
 
         static public void generarPersonal(List<Personal> lista)
         {
-            string Nombre, Apellido, EstadoCivil, Genero;
+            string Nombre, Apellido;
             double Sueldo;
             Cargos cargo;
+            EstadoCivil estadoCivil;
+            Genero genero;
             DateTime FechaNacimiento, FechaIngreso;
             int Añon, Mesn, Añoi, Mesi;
 
-
-
-            /*Console.Write("**********");
-            Console.Write("*EMPLEADO*");
-            Console.Write("**********");*/
-            Nombre = Enum.GetNames(typeof(Nombres))[rand.Next((Enum.GetNames(typeof(Nombres)).Length))];
-            Apellido = Enum.GetNames(typeof(Apellidos))[rand.Next((Enum.GetNames(typeof(Apellidos)).Length))];
-            EstadoCivil = Enum.GetNames(typeof(EstadoCivil))[rand.Next((Enum.GetNames(typeof(EstadoCivil)).Length))];
-            Genero = Enum.GetNames(typeof(Genero))[rand.Next((Enum.GetNames(typeof(Genero)).Length))];
+            Nombre = Nombres[rand.Next(Nombres.Length)];
+            Apellido = Apellidos[rand.Next(Apellidos.Length)];
+            estadoCivil = (EstadoCivil)(EstadoCivil)rand.Next(0, Enum.GetNames(typeof(EstadoCivil)).Length);
+            genero = (Genero)rand.Next(0, Enum.GetNames(typeof(Genero)).Length);
             //POR QUE? NO DEBERIA PRODUCIR ERROR?
-            cargo = (Cargos)Enum.GetValues(typeof(Cargos)).GetValue(rand.Next(Enum.GetNames(typeof(Cargos)).Length));
+            cargo = (Cargos)(Cargos)rand.Next(0, Enum.GetNames(typeof(Cargos)).Length);
             Sueldo = rand.Next(15, 30) * 1000;
-            Añon = rand.Next(1950, DateTime.Today.Year-18);
+            Añon = rand.Next(1950, DateTime.Today.Year - 18);
             Mesn = rand.Next(1, 12);
-            FechaNacimiento = new DateTime(Añon, Mesn, rand.Next(1,DateTime.DaysInMonth(Añon,Mesn)));
-            Añoi = rand.Next(Añon + 18, DateTime.Today.Year);
-            Mesi = rand.Next(1,12);
-            FechaIngreso = new DateTime(Añoi,Mesi, rand.Next(1, DateTime.DaysInMonth(Añoi, Mesi)));
-            Personal personal = new Personal(Nombre,Apellido,EstadoCivil,Genero,Sueldo,cargo,FechaNacimiento,FechaIngreso);
+            FechaNacimiento = new DateTime(Añon, Mesn, rand.Next(1, DateTime.DaysInMonth(Añon, Mesn)));
+            Añoi = rand.Next(Añon + 17, DateTime.Today.Year);
+            Mesi = rand.Next(1, 12);
+            FechaIngreso = new DateTime(Añoi, Mesi, rand.Next(1, DateTime.DaysInMonth(Añoi, Mesi)));
+            Personal personal = new Personal(Nombre, Apellido, estadoCivil, genero, Sueldo, cargo, FechaNacimiento, FechaIngreso);
             lista.Add(personal);
+        }
+
+        static public void simulador()
+        {
+            int cont = 0;
+            while (cont < 20)
+            {
+                generarPersonal(Empresa);
+                cont++;
+            }
+            cont = 0;
+            foreach (Personal personal in Empresa)
+            {
+                Console.Write((cont + 1) + "*****************************************\n\n");
+                personal.mostrarDatos();
+                cont++;
+            }
+        }
+
+        static public void empleados()
+        {
+            int i = 0, cont = 1;
+            if (Empresa.Count != 0)
+            {
+                foreach (Personal _personal in Empresa)
+                {
+                    Console.WriteLine(cont + ": " + _personal.Apellido + ", " + _personal.Nombre);
+                    cont++;
+                }
+                Console.Write("\n¿QUE EMPLEADO DESEA MOSTRAR?: ");
+            }
+            else
+            {
+                Console.Write("La lista esta vacia.");
+                return;
+            }
+            i = int.Parse(Console.ReadLine()) - 1;
+            Console.Write("\n\t\t\t**********\n");
+            Console.Write("\t\t\t*EMPLEADO*\n");
+            Console.Write("\t\t\t**********\n\n");
+            Empresa[i].mostrarDatos();
+        }
+
+        static public void cantidadEmpleados()
+        {
+            Console.Write("Cantidad de empleados: " + Empresa.Count);
+        }
+
+        static public void montoSalarios()
+        {
+            double monto = 0;
+            foreach (Personal _Personal in Empresa)
+            {
+                monto += _Personal.salario();
+            }
+            Console.Write("El monto total de la empresa en concepto de salarios: $" + monto);
+        }
+
+        static public void Otra_Operacion()
+        {
+            string eleccion;
+            Console.Write("\n\nDESEA REALIZAR OTRA ACCION (Y/N): ");
+            eleccion = Console.ReadLine();
+            eleccion = eleccion.ToLower();
+            if (eleccion == "y")
+                MENU();
+            else if (eleccion == "n")
+                return;
+            else
+            {
+                Console.Write("OPCION INCORRECTA.\n");
+                Otra_Operacion();
+            }
         }
     }
 }
